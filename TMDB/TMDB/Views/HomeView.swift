@@ -10,7 +10,8 @@ struct HomeView: View {
 		ZStack {
 			Colors.background.ignoresSafeArea()
 
-			if viewModel.isLoaderVisible {
+			if viewModel.nowPlaying.isEmpty {
+//			if viewModel.isLoaderVisible {
 				DataLoaderView()
 			} else {
 				ContentView()
@@ -18,6 +19,9 @@ struct HomeView: View {
 			}
 		}
 		.animation(.easeInOut, value: viewModel.isLoaderVisible)
+		.onAppear {
+			viewModel.getData()
+		}
     }
 }
 
