@@ -12,6 +12,7 @@ struct TMDBApp: App {
         WindowGroup {
 			let viewModel = HomeViewModel(dataService: dataService)
             HomeView(viewModel: viewModel)
+				.preferredColorScheme(.dark)
         }
     }
 }

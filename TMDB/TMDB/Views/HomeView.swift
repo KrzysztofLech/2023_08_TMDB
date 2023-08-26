@@ -7,7 +7,17 @@ struct HomeView: View {
 	@StateObject var viewModel: HomeViewModel
 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+		ZStack {
+			Colors.background.ignoresSafeArea()
+
+			if viewModel.isLoaderVisible {
+				DataLoaderView()
+			} else {
+				ContentView()
+					.environmentObject(viewModel)
+			}
+		}
+		.animation(.easeInOut, value: viewModel.isLoaderVisible)
     }
 }
 

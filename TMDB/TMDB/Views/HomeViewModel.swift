@@ -8,5 +8,13 @@ final class HomeViewModel: ObservableObject {
 
 	init(dataService: DataServiceProtocol) {
 		self.dataService = dataService
+
+		DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+			self.isLoaderVisible = false
+		}
 	}
+
+	// MARK: - UI -
+
+	@Published var isLoaderVisible = true
 }
