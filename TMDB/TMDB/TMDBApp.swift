@@ -5,9 +5,13 @@ import SwiftUI
 
 @main
 struct TMDBApp: App {
+
+	let dataService: DataServiceProtocol = DataService()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+			let viewModel = HomeViewModel(dataService: dataService)
+            HomeView(viewModel: viewModel)
         }
     }
 }
