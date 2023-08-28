@@ -10,8 +10,7 @@ struct HomeView: View {
 		ZStack {
 			Colors.background.ignoresSafeArea()
 
-			if viewModel.nowPlaying.isEmpty {
-//			if viewModel.isLoaderVisible {
+			if viewModel.isLoaderVisible {
 				DataLoaderView()
 			} else {
 				ContentView()

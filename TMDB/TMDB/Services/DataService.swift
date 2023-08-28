@@ -4,30 +4,11 @@
 import Combine
 import Foundation
 
-enum DataType {
-	case nowPlaying
-
-	var path: String {
-		switch self {
-		case .nowPlaying:
-			return "https://api.themoviedb.org/3/movie/now_playing"
-		}
-	}
-}
-
-enum Language {
-	case pl, us
-
-	var code: String {
-		switch self {
-		case .pl: return "pl-PL"
-		case .us: return "en-US"
-		}
-	}
-}
+typealias MovieCollection = (type: MoviesDataType, movies: [Movie])
 
 protocol DataServiceProtocol {
-	var nowPlayingPublisher: Published<[NowPlayingResult]>.Publisher { get }
+	var dataDownloadingInProgressPublisher: Published<Bool>.Publisher { get }
+	var data: [MovieCollection] { get }
 	func getData()
 }
 
@@ -39,7 +20,7 @@ final class DataService: DataServiceProtocol {
 
 	private let session = URLSession.shared
 
-	private func getUrlRequestFor(_ dataType: DataType, andLanguage language: Language) -> URLRequest? {
+	private func getUrlRequestFor(_ dataType: MoviesDataType, andLanguage language: Language) -> URLRequest? {
 		let fullUrlString = dataType.path + "?language=\(language.code)&page=1"
 		guard let url = URL(string: fullUrlString) else { return nil }
 
@@ -59,25 +40,36 @@ final class DataService: DataServiceProtocol {
 		return urlRequest
 	}
 
-	@Published private var nowPlaying: [NowPlayingResult] = []
-	var nowPlayingPublisher: Published<[NowPlayingResult]>.Publisher { $nowPlaying }
+	@Published var dataDownloadingInProgress = true
+	var dataDownloadingInProgressPublisher: Published<Bool>.Publisher { $dataDownloadingInProgress }
+
+	var data: [(type: MoviesDataType, movies: [Movie])] = [] {
+		didSet {
+			if data.count == MoviesDataType.allCases.count {
+				dataDownloadingInProgress = false
+			}
+		}
+	}
 
 	func getData() {
 		let language = Language.pl
 
-		getNowPlaying(language: language)
+		MoviesDataType.allCases.forEach { type in
+			getMoviesData(type, language: language)
+		}
 	}
 
-	func getNowPlaying(language: Language) {
-		guard let urlRequest = getUrlRequestFor(.nowPlaying, andLanguage: language) else { return }
+	private func getMoviesData(_ dataType: MoviesDataType, language: Language) {
+		guard let urlRequest = getUrlRequestFor(dataType, andLanguage: language) else { return }
 
 		session.dataTaskPublisher(for: urlRequest)
 			.map { $0.data }
-			.decode(type: NowPlaying.self, decoder: JSONDecoder())
+			.decode(type: MoviesData.self, decoder: JSONDecoder())
 			.sink(
 				receiveCompletion: { _ in },
 				receiveValue: { decodedData in
-					self.nowPlaying = decodedData.results
+					self.data.append((dataType, decodedData.movies))
+					print("\(dataType.rawValue) downloaded")
 				}
 			)
 			.store(in: &cancellables)

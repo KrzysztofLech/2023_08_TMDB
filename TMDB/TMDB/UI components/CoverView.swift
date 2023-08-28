@@ -6,6 +6,7 @@ import SwiftUI
 struct CoverView: View {
 	let imageUrl: URL?
 	let size: CGSize
+	var cornerRadius: CGFloat = 0
 
     var body: some View {
 		AsyncImage(
@@ -22,7 +23,9 @@ struct CoverView: View {
 					.tint(Colors.light)
 					.padding()
 			}
-		).clipped()
+		)
+		.clipped()
+		.cornerRadius(cornerRadius)
     }
 }
 
