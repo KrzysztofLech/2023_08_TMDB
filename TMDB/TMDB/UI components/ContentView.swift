@@ -19,7 +19,6 @@ struct ContentView: View {
 		}
 	}
 
-	@ViewBuilder
 	private var header: some View {
 		VStack(alignment: .center, spacing: 0) {
 			Image("logoTMDB")
@@ -27,7 +26,6 @@ struct ContentView: View {
 		}
 	}
 
-	@ViewBuilder
 	private var movieCarousels: some View {
 		ScrollView(showsIndicators: false) {
 			VStack(spacing: inset) {
@@ -42,7 +40,6 @@ struct ContentView: View {
 		}
 	}
 
-	@ViewBuilder
 	private func landscapeCarousel(data: MovieCollection) -> some View {
 		VStack(alignment: .leading, spacing: 8) {
 			Text(data.type.title)
@@ -72,7 +69,6 @@ struct ContentView: View {
 		}
 	}
 
-	@ViewBuilder
 	private func portraitCarousel(data: MovieCollection) -> some View {
 		VStack(alignment: .leading, spacing: 8) {
 			Text(data.type.title)
